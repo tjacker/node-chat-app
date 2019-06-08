@@ -24,6 +24,11 @@ io.on('connection', socket => {
 		// Emits that message to all connected users
 		io.emit('message', message);
 	});
+
+	// Handles socket disconnects and informs all other users
+	socket.on('disconnect', () => {
+		io.emit('message', 'A user has left');
+	});
 });
 
 module.exports = server;
