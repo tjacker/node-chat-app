@@ -9,8 +9,21 @@ const io = socketio(server);
 
 app.use(express.static('public'));
 
-io.on('connection', () => {
+// Handles socket connections to the server
+io.on('connection', socket => {
 	console.log('New WebSocket connection');
+
+	// Emits a message to a user upon connection
+	socket.emit('message', 'Welcome!');
+
+	// Broadcasts a message to all other users when a new user has connected
+	socket.broadcast.emit('message', 'A new user has joined');
+
+	// Listens for a message being sent by a user
+	socket.on('sendMessage', message => {
+		// Emits that message to all connected users
+		io.emit('message', message);
+	});
 });
 
 module.exports = server;
