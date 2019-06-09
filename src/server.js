@@ -38,7 +38,7 @@ io.on('connection', socket => {
 	// Listens for a location being sent by a user
 	socket.on('sendLocation', (location, cb) => {
 		// Emits that location to all connected users
-		io.emit('message', `https://google.com/maps?q=${location.latitude},${location.longitude}`);
+		io.emit('location', `https://google.com/maps?q=${location.latitude},${location.longitude}`);
 		cb();
 	});
 

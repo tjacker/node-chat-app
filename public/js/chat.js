@@ -8,12 +8,21 @@ const messageForm = document.getElementById('message-form'),
 	sendLocationButton = document.getElementById('send-location'),
 	messages = document.getElementById('messages'),
 	// Templates
-	messageTemplate = document.getElementById('message-template').innerHTML;
+	messageTemplate = document.getElementById('message-template').innerHTML,
+	locationTemplate = document.getElementById('location-template').innerHTML;
 
 socket.on('message', message => {
 	// Render new message to the screen using a template
 	const html = Mustache.render(messageTemplate, {
 		message
+	});
+
+	messages.insertAdjacentHTML('beforeend', html);
+});
+
+socket.on('location', url => {
+	const html = Mustache.render(locationTemplate, {
+		url
 	});
 
 	messages.insertAdjacentHTML('beforeend', html);
