@@ -1,13 +1,22 @@
 // Establishes client connection
 const socket = io();
 
-const messageForm = document.getElementById('message-form');
-const messageFormInput = messageForm.querySelector('input');
-const messageFormButton = messageForm.querySelector('button');
-const sendLocationButton = document.getElementById('send-location');
+// Elements
+const messageForm = document.getElementById('message-form'),
+	messageFormInput = messageForm.querySelector('input'),
+	messageFormButton = messageForm.querySelector('button'),
+	sendLocationButton = document.getElementById('send-location'),
+	messages = document.getElementById('messages'),
+	// Templates
+	messageTemplate = document.getElementById('message-template').innerHTML;
 
 socket.on('message', message => {
-	console.log(message);
+	// Render new message to the screen using a template
+	const html = Mustache.render(messageTemplate, {
+		message
+	});
+
+	messages.insertAdjacentHTML('beforeend', html);
 });
 
 messageForm.addEventListener('submit', e => {

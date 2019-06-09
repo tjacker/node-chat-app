@@ -10,13 +10,23 @@
 
 <body>
 	<h1>Chat App</h1>
+
+	<div id="messages"></div>
+
 	<form id="message-form">
 		<input type="text" name="message" placeholder="Message">
 		<button type="submit">Send</button>
 	</form>
 
 	<button id="send-location" type="button">Share location</button>
+
+	<script id="message-template" type="text/html">
+		<div>
+			<p>{{message}}</p>
+		</div>
+	</script>
 	<!-- Served automatically to the client -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/js/chat.js"></script>
 </body>
