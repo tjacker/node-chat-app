@@ -10,7 +10,15 @@ document.getElementById('message-form').addEventListener('submit', e => {
 
 	// Gets message from input field and emits message to the server
 	const message = e.target.elements.message.value;
-	socket.emit('sendMessage', message);
+
+	// Callback function is sent to the server to determine if emit event was successful
+	socket.emit('sendMessage', message, error => {
+		if (error) {
+			return console.warn(error);
+		}
+
+		console.info('Message delivered successfully.');
+	});
 });
 
 document.getElementById('send-location').addEventListener('click', () => {

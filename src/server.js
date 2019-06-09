@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
+const Filter = require('bad-words');
 
 const app = express();
 // Creates server outside of the express library in order to configure
@@ -20,9 +21,17 @@ io.on('connection', socket => {
 	socket.broadcast.emit('message', 'A new user has joined');
 
 	// Listens for a message being sent by a user
-	socket.on('sendMessage', message => {
+	socket.on('sendMessage', (message, cb) => {
+		const filter = new Filter();
+
+		if (filter.isProfane(message)) {
+			return cb('Profanity is not allowed.');
+		}
+
 		// Emits that message to all connected users
 		io.emit('message', message);
+		// Callback function sent from the client. Used to acknowledge message was received
+		cb();
 	});
 
 	// Listens for a location being sent by a user
