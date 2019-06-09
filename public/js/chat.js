@@ -27,7 +27,12 @@ document.getElementById('send-location').addEventListener('click', () => {
 	}
 
 	navigator.geolocation.getCurrentPosition(position => {
+		if (!position.coords) return;
+
 		const { latitude, longitude } = position.coords;
-		socket.emit('sendLocation', { latitude, longitude });
+
+		socket.emit('sendLocation', { latitude, longitude }, () => {
+			console.info('Location information shared successfully.');
+		});
 	});
 });

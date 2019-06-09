@@ -24,6 +24,7 @@ io.on('connection', socket => {
 	socket.on('sendMessage', (message, cb) => {
 		const filter = new Filter();
 
+		// Check if message contains profane language
 		if (filter.isProfane(message)) {
 			return cb('Profanity is not allowed.');
 		}
@@ -35,9 +36,10 @@ io.on('connection', socket => {
 	});
 
 	// Listens for a location being sent by a user
-	socket.on('sendLocation', location => {
+	socket.on('sendLocation', (location, cb) => {
 		// Emits that location to all connected users
 		io.emit('message', `https://google.com/maps?q=${location.latitude},${location.longitude}`);
+		cb();
 	});
 
 	// Handles socket disconnects and informs all other users
