@@ -14,13 +14,15 @@ const messageForm = document.getElementById('message-form'),
 socket.on('message', message => {
 	// Render new message to the screen using a template
 	const html = Mustache.render(messageTemplate, {
-		message
+		message: message.text,
+		createdAt: moment(message.createdAt).format('h:mm a')
 	});
 
 	messages.insertAdjacentHTML('beforeend', html);
 });
 
 socket.on('location', url => {
+	// Render user location to the screen using a template
 	const html = Mustache.render(locationTemplate, {
 		url
 	});
