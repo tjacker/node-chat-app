@@ -3,7 +3,7 @@ const http = require('http');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 
-const { generateMessage } = require('./utils/messages');
+const { generateMessage, generateLocation } = require('./utils/messages');
 
 const app = express();
 // Creates server outside of the express library in order to configure
@@ -40,7 +40,7 @@ io.on('connection', socket => {
 	// Listens for a location being sent by a user
 	socket.on('sendLocation', (location, cb) => {
 		// Emits that location to all connected users
-		io.emit('location', `https://google.com/maps?q=${location.latitude},${location.longitude}`);
+		io.emit('location', generateLocation(location));
 		cb();
 	});
 

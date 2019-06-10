@@ -5,6 +5,16 @@ const generateMessage = text => {
 	};
 };
 
+const generateLocation = location => {
+	const baseUrl = 'https://www.google.com/maps?q=';
+
+	return {
+		url: `${baseUrl}${location.latitude},${location.longitude}`,
+		createdAt: new Date().getTime()
+	};
+};
+
 module.exports = {
-	generateMessage
+	generateMessage,
+	generateLocation
 };

@@ -21,10 +21,11 @@ socket.on('message', message => {
 	messages.insertAdjacentHTML('beforeend', html);
 });
 
-socket.on('location', url => {
+socket.on('location', message => {
 	// Render user location to the screen using a template
 	const html = Mustache.render(locationTemplate, {
-		url
+		url: message.url,
+		createdAt: moment(message.createdAt).format('h:mm a')
 	});
 
 	messages.insertAdjacentHTML('beforeend', html);
