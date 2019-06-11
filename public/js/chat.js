@@ -6,11 +6,17 @@ const messageForm = document.getElementById('message-form'),
 	messageFormInput = messageForm.querySelector('input'),
 	messageFormButton = messageForm.querySelector('button'),
 	sendLocationButton = document.getElementById('send-location'),
-	messages = document.getElementById('messages'),
-	// Templates
-	messageTemplate = document.getElementById('message-template').innerHTML,
+	messages = document.getElementById('messages');
+
+// Templates
+const messageTemplate = document.getElementById('message-template').innerHTML,
 	locationTemplate = document.getElementById('location-template').innerHTML;
 
+// Options
+// Helper function for parsing URL query parameters
+const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
+
+// Listens for messages being sent from the server
 socket.on('message', message => {
 	// Render new message to the screen using a template
 	const html = Mustache.render(messageTemplate, {
@@ -21,6 +27,7 @@ socket.on('message', message => {
 	messages.insertAdjacentHTML('beforeend', html);
 });
 
+// Listens for location information being sent from the server
 socket.on('location', message => {
 	// Render user location to the screen using a template
 	const html = Mustache.render(locationTemplate, {
@@ -31,6 +38,7 @@ socket.on('location', message => {
 	messages.insertAdjacentHTML('beforeend', html);
 });
 
+// Sends a messages to the server
 messageForm.addEventListener('submit', e => {
 	e.preventDefault();
 
@@ -57,6 +65,7 @@ messageForm.addEventListener('submit', e => {
 	});
 });
 
+// Sends user's location information to the server
 sendLocationButton.addEventListener('click', () => {
 	// Disable button until a response is received
 	// If browser does not support geolocation, the button will remain disabled
@@ -78,3 +87,6 @@ sendLocationButton.addEventListener('click', () => {
 		});
 	});
 });
+
+// Sends a request to the server to join a chat room
+socket.emit('join', { username, room });
