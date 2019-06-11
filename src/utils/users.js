@@ -13,9 +13,7 @@ const addUser = ({ id, username, room }) => {
 	}
 
 	// Check for existing user in room
-	const existingUser = users.find(user => {
-		return user.room === room && user.username === username;
-	});
+	const existingUser = users.find(user => user.room === room && user.username === username);
 
 	// Validate username
 	if (existingUser) {
@@ -24,7 +22,7 @@ const addUser = ({ id, username, room }) => {
 		};
 	}
 
-	// Store user if conditions above are not met
+	// Store user if validations above are passed
 	const user = { id, username, room };
 
 	users.push(user);
@@ -44,7 +42,19 @@ const removeUser = id => {
 	}
 };
 
+const getUser = id => {
+	// Find user in array by id and return user or undefined (if there is no match)
+	return users.find(user => user.id === id);
+};
+
+const getUsersInRoom = room => {
+	// Find all users in a given room and return users or an empty array (if there are no matches)
+	return users.filter(user => user.room === room);
+};
+
 module.exports = {
 	addUser,
-	removeUser
+	removeUser,
+	getUser,
+	getUsersInRoom
 };
