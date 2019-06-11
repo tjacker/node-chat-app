@@ -14,6 +14,7 @@ const socketio = require('socket.io');
 const Filter = require('bad-words');
 
 const { generateMessage, generateLocation } = require('./utils/messages');
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
 
 const app = express();
 // Creates server outside of the express library in order to configure
@@ -27,15 +28,26 @@ io.on('connection', socket => {
 	console.log('New WebSocket connection');
 
 	// Listens for a user requesting to join a chat room
-	socket.on('join', ({ username, room }) => {
+	socket.on('join', ({ username, room }, cb) => {
+		// Call add user function (will return either an error or user)
+		const { error, user } = addUser({ id: socket.id, username, room });
+
+		// if add user function returns an error, send back to the client
+		if (error) {
+			return cb(error);
+		}
+
 		// Server only method that restricts user to a designated area (ie room)
-		socket.join(room);
+		socket.join(user.room);
 
 		// Emits a message to a user upon connection
 		socket.emit('message', generateMessage('Welcome!'));
 
 		// Broadcasts a message to all other users in the room when a new user has connected
-		socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined.`));
+		socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined.`));
+
+		// Return control back to the client
+		cb();
 	});
 
 	// Listens for a message being sent by a user
@@ -62,7 +74,13 @@ io.on('connection', socket => {
 
 	// Handles socket disconnects and informs all other users
 	socket.on('disconnect', () => {
-		io.emit('message', generateMessage('A user has left.'));
+		// Call remove user function (will return either a user or undefined)
+		const user = removeUser(socket.id);
+
+		// If user exists, emit a message only to that room
+		if (user) {
+			io.to(user.room).emit('message', generateMessage(`${user.username} has left the room.`));
+		}
 	});
 });
 

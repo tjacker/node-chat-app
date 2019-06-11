@@ -89,4 +89,10 @@ sendLocationButton.addEventListener('click', () => {
 });
 
 // Sends a request to the server to join a chat room
-socket.emit('join', { username, room });
+socket.emit('join', { username, room }, error => {
+	// If error, alert user and redirect them back to join page
+	if (error) {
+		alert(error);
+		location.href = '/';
+	}
+});
