@@ -52,23 +52,30 @@ io.on('connection', socket => {
 
 	// Listens for a message being sent by a user
 	socket.on('sendMessage', (message, cb) => {
-		const filter = new Filter();
+		// Call get user function (will return either a user or undefined)
+		const user = getUser(socket.id);
 
 		// Check if message contains profane language
+		const filter = new Filter();
+
 		if (filter.isProfane(message)) {
 			return cb('Profanity is not allowed.');
 		}
 
 		// Emits that message to all connected users
-		io.to('JS').emit('message', generateMessage(message));
+		io.to(user.room).emit('message', generateMessage(message));
 		// Callback function sent from the client. Used to acknowledge message was received
 		cb();
 	});
 
 	// Listens for a location being sent by a user
 	socket.on('sendLocation', (location, cb) => {
+		// Call get user function (will return either a user or undefined)
+		const user = getUser(socket.id);
+
 		// Emits that location to all connected users
-		io.emit('location', generateLocation(location));
+		io.to(user.room).emit('location', generateLocation(location));
+		// Callback function sent from the client. Used to acknowledge message was received
 		cb();
 	});
 
