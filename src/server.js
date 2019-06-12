@@ -20,6 +20,7 @@ const app = express();
 // Creates server outside of the express library in order to configure
 const server = http.createServer(app);
 const io = socketio(server);
+const system = 'Chat App';
 
 app.use(express.static('public'));
 
@@ -41,10 +42,12 @@ io.on('connection', socket => {
 		socket.join(user.room);
 
 		// Emits a message to a user upon connection
-		socket.emit('message', generateMessage('Welcome!'));
+		socket.emit('message', generateMessage(system, `Welcome ${username.toLowerCase()}!`));
 
 		// Broadcasts a message to all other users in the room when a new user has connected
-		socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined.`));
+		socket.broadcast
+			.to(user.room)
+			.emit('message', generateMessage(system, `${user.username} has joined.`));
 
 		// Return control back to the client
 		cb();
@@ -62,8 +65,8 @@ io.on('connection', socket => {
 			return cb('Profanity is not allowed.');
 		}
 
-		// Emits that message to all connected users
-		io.to(user.room).emit('message', generateMessage(message));
+		// Emits message to all connected users in that room
+		io.to(user.room).emit('message', generateMessage(user.username, message));
 		// Callback function sent from the client. Used to acknowledge message was received
 		cb();
 	});
@@ -73,8 +76,8 @@ io.on('connection', socket => {
 		// Call get user function (will return either a user or undefined)
 		const user = getUser(socket.id);
 
-		// Emits that location to all connected users
-		io.to(user.room).emit('location', generateLocation(location));
+		// Emits location to all connected users in that room
+		io.to(user.room).emit('location', generateLocation(user.username, location));
 		// Callback function sent from the client. Used to acknowledge message was received
 		cb();
 	});
@@ -86,7 +89,10 @@ io.on('connection', socket => {
 
 		// If user exists, emit a message only to that room
 		if (user) {
-			io.to(user.room).emit('message', generateMessage(`${user.username} has left the room.`));
+			io.to(user.room).emit(
+				'message',
+				generateMessage(system, `${user.username} has left the room.`)
+			);
 		}
 	});
 });
