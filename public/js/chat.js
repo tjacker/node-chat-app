@@ -6,11 +6,13 @@ const messageForm = document.getElementById('message-form'),
 	messageFormInput = messageForm.querySelector('input'),
 	messageFormButton = messageForm.querySelector('button'),
 	sendLocationButton = document.getElementById('send-location'),
-	messages = document.getElementById('messages');
+	messages = document.getElementById('messages'),
+	sidebar = document.getElementById('sidebar');
 
 // Templates
 const messageTemplate = document.getElementById('message-template').innerHTML,
-	locationTemplate = document.getElementById('location-template').innerHTML;
+	locationTemplate = document.getElementById('location-template').innerHTML,
+	sidebarTemplate = document.getElementById('sidebar-template').innerHTML;
 
 // Options
 // Helper function for parsing URL query parameters
@@ -38,6 +40,17 @@ socket.on('location', message => {
 	});
 
 	messages.insertAdjacentHTML('beforeend', html);
+});
+
+// Listens for room information being sent from the server
+socket.on('roomInfo', ({ room, users }) => {
+	// Render room and users to the screen using a template
+	const html = Mustache.render(sidebarTemplate, {
+		room,
+		users
+	});
+
+	sidebar.innerHTML = html;
 });
 
 // Sends a messages to the server

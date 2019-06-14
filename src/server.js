@@ -49,6 +49,12 @@ io.on('connection', socket => {
 			.to(user.room)
 			.emit('message', generateMessage(system, `${user.username} has joined.`));
 
+		// Send updated room data and participant names to all users
+		io.to(user.room).emit('roomInfo', {
+			room: user.room,
+			users: getUsersInRoom(user.room)
+		});
+
 		// Return control back to the client
 		cb();
 	});
@@ -93,6 +99,11 @@ io.on('connection', socket => {
 				'message',
 				generateMessage(system, `${user.username} has left the room.`)
 			);
+			// Send updated room data and participant names to all users
+			io.to(user.room).emit('roomInfo', {
+				room: user.room,
+				users: getUsersInRoom(user.room)
+			});
 		}
 	});
 });
