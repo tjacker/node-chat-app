@@ -18,6 +18,31 @@ const messageTemplate = document.getElementById('message-template').innerHTML,
 // Helper function for parsing URL query parameters
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
 
+// Auto scroll messages if user is at the end of messages container
+const autoScroll = () => {
+	// Get new message element
+	const newMessage = messages.lastElementChild;
+
+	// Get height of new message
+	const newMessageStyles = getComputedStyle(newMessage); // Returns an object of all applied styles
+	const newMessageMargin = parseInt(newMessageStyles.marginBottom); // Returns pixels as an integer
+	const newMessageHeight = newMessage.offsetHeight + newMessageMargin; // Height of content plus bottom margin
+
+	// Get visible height of messages
+	const visibleHeight = messages.offsetHeight;
+
+	// Get height of messages container
+	const containerHeight = messages.scrollHeight;
+
+	// Get scroll position
+	const scrollOffset = messages.scrollTop + visibleHeight;
+
+	// Check if scroll position is at the end before auto scrolling
+	if (containerHeight - newMessageHeight <= scrollOffset) {
+		messages.scrollTop = messages.scrollHeight;
+	}
+};
+
 // Listens for messages being sent from the server
 socket.on('message', message => {
 	// Render new message to the screen using a template
@@ -28,6 +53,7 @@ socket.on('message', message => {
 	});
 
 	messages.insertAdjacentHTML('beforeend', html);
+	autoScroll();
 });
 
 // Listens for location information being sent from the server
@@ -40,6 +66,7 @@ socket.on('location', message => {
 	});
 
 	messages.insertAdjacentHTML('beforeend', html);
+	autoScroll();
 });
 
 // Listens for room information being sent from the server
